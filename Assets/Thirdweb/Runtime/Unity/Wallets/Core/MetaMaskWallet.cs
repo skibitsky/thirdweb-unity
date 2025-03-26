@@ -45,7 +45,7 @@ namespace Thirdweb.Unity
                 if (metaMaskInstance.IsMetaMaskAvailable())
                 {
                     ThirdwebDebug.Log("MetaMask is available. Enabling Ethereum...");
-                    var isEnabled = await metaMaskInstance.EnableEthereumAsync();
+                    var isEnabled = await metaMaskInstance.EnableEthereumAsync(activeChainId);
                     ThirdwebDebug.Log($"Ethereum enabled: {isEnabled}");
                     if (isEnabled && !string.IsNullOrEmpty(metaMaskInstance.GetAddress()))
                     {
