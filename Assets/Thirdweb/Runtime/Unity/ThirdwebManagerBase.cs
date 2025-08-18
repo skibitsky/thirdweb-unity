@@ -1,11 +1,11 @@
-using UnityEngine;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Numerics;
 using System.Threading.Tasks;
-using System.Linq;
-using System;
-using System.IO;
 using Newtonsoft.Json;
+using UnityEngine;
 
 namespace Thirdweb.Unity
 {
@@ -16,7 +16,7 @@ namespace Thirdweb.Unity
         InAppWallet,
         WalletConnectWallet,
         MetaMaskWallet,
-        EcosystemWallet
+        EcosystemWallet,
     }
 
     [Serializable]
