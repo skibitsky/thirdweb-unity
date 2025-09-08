@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
@@ -24,7 +25,7 @@ namespace Thirdweb.Unity.Examples
     public class PlaygroundManager : MonoBehaviour
     {
         [field: SerializeField, Header("Wallet Options")]
-        private ulong ActiveChainId = 421614;
+        private ulong ActiveChainId = 84532;
 
         [field: SerializeField]
         private bool WebglForceMetamaskExtension = false;
@@ -65,8 +66,8 @@ namespace Thirdweb.Unity.Examples
                     {
                         Decimals = 18,
                         Name = "ETH",
-                        Symbol = "ETH"
-                    }
+                        Symbol = "ETH",
+                    },
                 };
             }
         }
@@ -76,6 +77,11 @@ namespace Thirdweb.Unity.Examples
             CloseAllPanels();
 
             ConnectWalletPanel.SetActive(true);
+
+            if (ThirdwebManager.Instance != null && ThirdwebManager.Instance.ActiveWallet != null)
+            {
+                ThirdwebManager.Instance.ActiveWallet.Disconnect();
+            }
 
             PrivateKeyWalletButton.onClick.RemoveAllListeners();
             PrivateKeyWalletButton.onClick.AddListener(() =>
@@ -90,7 +96,7 @@ namespace Thirdweb.Unity.Examples
             WalletConnectButton.onClick.RemoveAllListeners();
             WalletConnectButton.onClick.AddListener(() =>
             {
-                var options = GetWalletOptions(WalletProvider.WalletConnectWallet);
+                var options = GetWalletOptions(WalletProvider.ReownWallet);
                 ConnectWallet(options);
             });
         }
@@ -99,7 +105,7 @@ namespace Thirdweb.Unity.Examples
         {
             // Connect the wallet
 
-            var internalWalletProvider = options.Provider == WalletProvider.MetaMaskWallet ? WalletProvider.WalletConnectWallet : options.Provider;
+            var internalWalletProvider = options.Provider == WalletProvider.MetaMaskWallet ? WalletProvider.ReownWallet : options.Provider;
             var currentPanel = WalletPanels.Find(panel => panel.Identifier == internalWalletProvider.ToString());
 
             Log(currentPanel.LogText, $"Connecting...");
@@ -156,9 +162,8 @@ namespace Thirdweb.Unity.Examples
                 case WalletProvider.EcosystemWallet:
                     var ecosystemWalletOptions = new EcosystemWalletOptions(ecosystemId: "ecosystem.the-bonfire", authprovider: AuthProvider.Google);
                     return new WalletOptions(provider: WalletProvider.EcosystemWallet, chainId: ActiveChainId, ecosystemWalletOptions: ecosystemWalletOptions);
-                case WalletProvider.WalletConnectWallet:
-                    var externalWalletProvider =
-                        Application.platform == RuntimePlatform.WebGLPlayer && WebglForceMetamaskExtension ? WalletProvider.MetaMaskWallet : WalletProvider.WalletConnectWallet;
+                case WalletProvider.ReownWallet:
+                    var externalWalletProvider = Application.platform == RuntimePlatform.WebGLPlayer && WebglForceMetamaskExtension ? WalletProvider.MetaMaskWallet : WalletProvider.ReownWallet;
                     return new WalletOptions(provider: externalWalletProvider, chainId: ActiveChainId);
                 default:
                     throw new System.NotImplementedException("Wallet provider not implemented for this example.");
@@ -342,7 +347,7 @@ namespace Thirdweb.Unity.Examples
                 try
                 {
                     LoadingLog(panel.LogText);
-                    var dropErc1155Contract = await ThirdwebManager.Instance.GetContract(address: "0x94894F65d93eb124839C667Fc04F97723e5C4544", chainId: ActiveChainId);
+                    var dropErc1155Contract = await ThirdwebManager.Instance.GetContract(address: "0x8F0a4dde7791fa9B6C62E0B099a1a3ff6dd1cF29", chainId: ActiveChainId);
                     var nft = await dropErc1155Contract.ERC1155_GetNFT(tokenId: 1);
                     Log(panel.LogText, $"NFT: {JsonConvert.SerializeObject(nft.Metadata)}");
                     var sprite = await nft.GetNFTSprite(client: ThirdwebManager.Instance.Client);
@@ -365,7 +370,7 @@ namespace Thirdweb.Unity.Examples
                 try
                 {
                     LoadingLog(panel.LogText);
-                    var contract = await ThirdwebManager.Instance.GetContract(address: "0x6A7a26c9a595E6893C255C9dF0b593e77518e0c3", chainId: ActiveChainId);
+                    var contract = await ThirdwebManager.Instance.GetContract(address: "0x8F0a4dde7791fa9B6C62E0B099a1a3ff6dd1cF29", chainId: ActiveChainId);
                     var result = await contract.ERC1155_URI(tokenId: 1);
                     Log(panel.LogText, $"Result (uri): {result}");
                 }
@@ -382,7 +387,7 @@ namespace Thirdweb.Unity.Examples
                 try
                 {
                     LoadingLog(panel.LogText);
-                    var dropErc20Contract = await ThirdwebManager.Instance.GetContract(address: "0xEBB8a39D865465F289fa349A67B3391d8f910da9", chainId: ActiveChainId);
+                    var dropErc20Contract = await ThirdwebManager.Instance.GetContract(address: "0x28C1209fa6e7f1B258Ef65527C94129c6F82995f", chainId: ActiveChainId);
                     var symbol = await dropErc20Contract.ERC20_Symbol();
                     var balance = await dropErc20Contract.ERC20_BalanceOf(ownerAddress: await ThirdwebManager.Instance.GetActiveWallet().GetAddress());
                     var balanceEth = Utils.ToEth(wei: balance.ToString(), decimalsToDisplay: 0, addCommas: false);
