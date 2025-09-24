@@ -295,6 +295,25 @@ namespace Thirdweb.Unity
 
             ThirdwebDebug.IsEnabled = this.ShowDebugLogs;
 
+#if THIRDWEB_REOWN
+
+#if UNITY_6000_0_OR_NEWER
+            var reownModalExists = FindAnyObjectByType<Reown.AppKit.Unity.AppKitCore>();
+#else
+            var reownModalExists = FindObjectOfType<Reown.AppKit.Unity.AppKitCore>();
+#endif
+
+            if (!reownModalExists)
+            {
+                ThirdwebDebug.LogError(
+                    "Reown AppKit not found in scene. If you do NOT intend to use ReownWallet, please remove the THIRDWEB_REOWN define symbol from your Player Settings to avoid this error. "
+                        + "If you DO intend to use ReownWallet, please drag and drop the \"Reown AppKit\" prefab into the scene. "
+                        + "It can be found under Packages/Reown.Appkit.Unity/Prefabs if you installed it correctly from https://docs.reown.com/appkit/unity/core/installation."
+                );
+            }
+
+#endif
+
             if (this.InitializeOnAwake)
             {
                 this.Initialize();
@@ -400,7 +419,7 @@ namespace Thirdweb.Unity
                     );
                     break;
                 case WalletProvider.ReownWallet:
-#if THIRDWEB_REOWN_AVAILABLE
+#if THIRDWEB_REOWN
                     wallet = await ReownWallet.Create(
                         client: this.Client,
                         activeChainId: walletOptions.ChainId,
@@ -415,7 +434,8 @@ namespace Thirdweb.Unity
                     break;
 #else
                     throw new NotSupportedException(
-                        "Reown wallet support is not available. Uncomment ReownWallet.cs to enable after installing their packages (https://docs.reown.com/appkit/unity/core/installation)."
+                        "Reown wallet support is not enabled. Please add the THIRDWEB_REOWN Scripting Define symbol in your Player settings to enable it. "
+                            + "This assumes you have added Reown Appkit to your packages, installation details can be found here https://docs.reown.com/appkit/unity/core/installation."
                     );
 #endif
                 default:
