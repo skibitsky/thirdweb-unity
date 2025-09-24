@@ -11,11 +11,9 @@ namespace Thirdweb.Unity
     [Serializable]
     public enum WalletProvider
     {
-        PrivateKeyWallet,
         InAppWallet,
-        ReownWallet,
-        MetaMaskWallet,
         EcosystemWallet,
+        ReownWallet,
     }
 
     [Serializable]
@@ -28,7 +26,6 @@ namespace Thirdweb.Unity
             string jwtOrPayload = null,
             string storageDirectoryPath = null,
             IThirdwebWallet siweSigner = null,
-            string legacyEncryptionKey = null,
             string walletSecret = null,
             List<string> forceSiweExternalWalletIds = null,
             ExecutionMode executionMode = ExecutionMode.EOA
@@ -40,7 +37,6 @@ namespace Thirdweb.Unity
                 jwtOrPayload: jwtOrPayload,
                 storageDirectoryPath: storageDirectoryPath,
                 siweSigner: siweSigner,
-                legacyEncryptionKey: legacyEncryptionKey,
                 walletSecret: walletSecret,
                 forceSiweExternalWalletIds: forceSiweExternalWalletIds,
                 executionMode: executionMode
@@ -74,9 +70,6 @@ namespace Thirdweb.Unity
         [JsonProperty("siweSigner")]
         public IThirdwebWallet SiweSigner;
 
-        [JsonProperty("legacyEncryptionKey")]
-        public string LegacyEncryptionKey;
-
         [JsonProperty("walletSecret")]
         public string WalletSecret;
 
@@ -95,7 +88,6 @@ namespace Thirdweb.Unity
             string jwtOrPayload = null,
             string storageDirectoryPath = null,
             IThirdwebWallet siweSigner = null,
-            string legacyEncryptionKey = null,
             string walletSecret = null,
             List<string> forceSiweExternalWalletIds = null,
             ExecutionMode executionMode = ExecutionMode.EOA
@@ -109,7 +101,6 @@ namespace Thirdweb.Unity
             this.JwtOrPayload = jwtOrPayload;
             this.StorageDirectoryPath = storageDirectoryPath ?? Path.Combine(Application.persistentDataPath, "Thirdweb", "EcosystemWallet");
             this.SiweSigner = siweSigner;
-            this.LegacyEncryptionKey = legacyEncryptionKey;
             this.WalletSecret = walletSecret;
             this.ForceSiweExternalWalletIds = forceSiweExternalWalletIds;
             this.ExecutionMode = executionMode;
@@ -268,8 +259,9 @@ namespace Thirdweb.Unity
         [field: SerializeField]
         protected List<RpcOverride> RpcOverrides { get; set; } = null;
 
+        public IThirdwebWallet ActiveWallet { get; set; } = null;
+
         public ThirdwebClient Client { get; protected set; }
-        public IThirdwebWallet ActiveWallet { get; protected set; }
         public bool Initialized { get; protected set; }
 
         public static ThirdwebManagerBase Instance { get; protected set; }
@@ -354,45 +346,6 @@ namespace Thirdweb.Unity
         }
 
         // ------------------------------------------------------
-        // Active Wallet Methods
-        // ------------------------------------------------------
-
-        public virtual IThirdwebWallet GetActiveWallet()
-        {
-            return this.ActiveWallet;
-        }
-
-        public virtual void SetActiveWallet(IThirdwebWallet wallet)
-        {
-            this.ActiveWallet = wallet;
-        }
-
-        public virtual IThirdwebWallet GetWallet(string address)
-        {
-            if (this.WalletMapping.TryGetValue(address, out var wallet))
-            {
-                return wallet;
-            }
-
-            throw new KeyNotFoundException($"Wallet with address {address} not found.");
-        }
-
-        public virtual async Task<IThirdwebWallet> AddWallet(IThirdwebWallet wallet)
-        {
-            var address = await wallet.GetAddress();
-            _ = this.WalletMapping.TryAdd(address, wallet);
-            return wallet;
-        }
-
-        public virtual void RemoveWallet(string address)
-        {
-            if (this.WalletMapping.ContainsKey(address))
-            {
-                _ = this.WalletMapping.Remove(address, out _);
-            }
-        }
-
-        // ------------------------------------------------------
         // Connection Methods
         // ------------------------------------------------------
 
@@ -412,9 +365,6 @@ namespace Thirdweb.Unity
 
             switch (walletOptions.Provider)
             {
-                case WalletProvider.PrivateKeyWallet:
-                    wallet = await PrivateKeyWallet.Generate(client: this.Client);
-                    break;
                 case WalletProvider.InAppWallet:
                     wallet = await InAppWallet.Create(
                         client: this.Client,
@@ -423,7 +373,6 @@ namespace Thirdweb.Unity
                         authProvider: walletOptions.InAppWalletOptions.AuthProvider,
                         storageDirectoryPath: walletOptions.InAppWalletOptions.StorageDirectoryPath,
                         siweSigner: walletOptions.InAppWalletOptions.SiweSigner,
-                        legacyEncryptionKey: walletOptions.InAppWalletOptions.LegacyEncryptionKey,
                         walletSecret: walletOptions.InAppWalletOptions.WalletSecret,
                         executionMode: walletOptions.InAppWalletOptions.ExecutionMode
                     );
@@ -446,12 +395,12 @@ namespace Thirdweb.Unity
                         authProvider: walletOptions.EcosystemWalletOptions.AuthProvider,
                         storageDirectoryPath: walletOptions.EcosystemWalletOptions.StorageDirectoryPath,
                         siweSigner: walletOptions.EcosystemWalletOptions.SiweSigner,
-                        legacyEncryptionKey: walletOptions.EcosystemWalletOptions.LegacyEncryptionKey,
                         walletSecret: walletOptions.EcosystemWalletOptions.WalletSecret,
                         executionMode: walletOptions.EcosystemWalletOptions.ExecutionMode
                     );
                     break;
                 case WalletProvider.ReownWallet:
+#if THIRDWEB_REOWN_AVAILABLE
                     wallet = await ReownWallet.Create(
                         client: this.Client,
                         activeChainId: walletOptions.ChainId,
@@ -464,9 +413,11 @@ namespace Thirdweb.Unity
                         excludedWalletIds: walletOptions.ReownOptions.ExcludedWalletIds
                     );
                     break;
-                case WalletProvider.MetaMaskWallet:
-                    wallet = await MetaMaskWallet.Create(client: this.Client, activeChainId: walletOptions.ChainId);
-                    break;
+#else
+                    throw new NotSupportedException(
+                        "Reown wallet support is not available. Uncomment ReownWallet.cs to enable after installing their packages (https://docs.reown.com/appkit/unity/core/installation)."
+                    );
+#endif
                 default:
                     throw new NotSupportedException($"Wallet provider {walletOptions.Provider} is not supported.");
             }
@@ -497,17 +448,6 @@ namespace Thirdweb.Unity
                         break;
                     case AuthProvider.Backend:
                         _ = await inAppWallet.LoginWithBackend();
-                        break;
-                    case AuthProvider.SiweExternal:
-                        _ = await inAppWallet.LoginWithSiweExternal(
-                            isMobile: Application.isMobilePlatform,
-                            browserOpenAction: (url) => Application.OpenURL(url),
-                            forceWalletIds: walletOptions.InAppWalletOptions.ForceSiweExternalWalletIds == null || walletOptions.InAppWalletOptions.ForceSiweExternalWalletIds.Count == 0
-                                ? null
-                                : walletOptions.InAppWalletOptions.ForceSiweExternalWalletIds,
-                            mobileRedirectScheme: this.MobileRedirectScheme,
-                            browser: new CrossPlatformUnityBrowser(this.RedirectPageHtmlOverride)
-                        );
                         break;
                     case AuthProvider.Google:
                     case AuthProvider.Apple:
@@ -560,17 +500,6 @@ namespace Thirdweb.Unity
                     case AuthProvider.Backend:
                         _ = await ecosystemWallet.LoginWithBackend();
                         break;
-                    case AuthProvider.SiweExternal:
-                        _ = await ecosystemWallet.LoginWithSiweExternal(
-                            isMobile: Application.isMobilePlatform,
-                            browserOpenAction: (url) => Application.OpenURL(url),
-                            forceWalletIds: walletOptions.EcosystemWalletOptions.ForceSiweExternalWalletIds == null || walletOptions.EcosystemWalletOptions.ForceSiweExternalWalletIds.Count == 0
-                                ? null
-                                : walletOptions.EcosystemWalletOptions.ForceSiweExternalWalletIds,
-                            mobileRedirectScheme: this.MobileRedirectScheme,
-                            browser: new CrossPlatformUnityBrowser(this.RedirectPageHtmlOverride)
-                        );
-                        break;
                     case AuthProvider.Google:
                     case AuthProvider.Apple:
                     case AuthProvider.Facebook:
@@ -608,8 +537,7 @@ namespace Thirdweb.Unity
             }
             else
             {
-                _ = await this.AddWallet(wallet);
-                this.SetActiveWallet(wallet);
+                this.ActiveWallet = wallet;
                 return wallet;
             }
         }
@@ -644,8 +572,7 @@ namespace Thirdweb.Unity
                 tokenPaymaster: smartWalletOptions.TokenPaymaster
             );
 
-            _ = await this.AddWallet(wallet);
-            this.SetActiveWallet(wallet);
+            this.ActiveWallet = wallet;
 
             // Persist "smartWalletOptions" to auto-connect
             if (this.AutoConnectLastWallet && this.GetAutoConnectOptions(out var lastWalletOptions))
