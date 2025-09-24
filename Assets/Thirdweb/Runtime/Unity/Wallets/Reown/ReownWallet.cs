@@ -149,10 +149,13 @@ namespace Thirdweb.Unity
             return await AppKit.Evm.SignMessageAsync(rawMessage);
         }
 
-        public Task<string> PersonalSign(string message)
+        public async Task<string> PersonalSign(string message)
         {
-            var rawMessage = System.Text.Encoding.UTF8.GetBytes(message);
-            return this.PersonalSign(rawMessage);
+            if (message.StartsWith("0x"))
+            {
+                return await this.PersonalSign(message.HexToBytes());
+            }
+            return await AppKit.Evm.SignMessageAsync(message);
         }
 
         public Task<string> RecoverAddressFromPersonalSign(string message, string signature)

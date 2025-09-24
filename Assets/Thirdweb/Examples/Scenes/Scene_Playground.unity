@@ -1961,6 +1961,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f139d8153587c1d46aaf3b6bf05d2c25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Thirdweb.Examples::ThirdwebPlayground
+  AlwaysUpgradeToSmartWallet: 1
   ChainId: 421614
   Email: 
   Phone: 

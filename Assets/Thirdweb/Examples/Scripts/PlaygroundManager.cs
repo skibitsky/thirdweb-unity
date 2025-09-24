@@ -16,6 +16,7 @@ namespace Thirdweb.Unity.Examples
     {
         #region Inspector
 
+        public bool AlwaysUpgradeToSmartWallet;
         public ulong ChainId;
         public string Email;
         public string Phone;
@@ -111,7 +112,7 @@ namespace Thirdweb.Unity.Examples
             );
 
             var smartWalletAddress = await smartWallet.GetAddress();
-            this.LogPlayground($"[Guest] Connected to smart wallet (sponsored gas):\n{smartWalletAddress}");
+            this.LogPlayground($"[Guest] Connected to wallet (sponsored gas):\n{smartWalletAddress}");
 
             // // --Smart wallets have special functionality other than just gas sponsorship
             // var sessionKeyReceipt = await smartWallet.CreateSessionKey(
@@ -131,6 +132,10 @@ namespace Thirdweb.Unity.Examples
         {
             var walletOptions = new WalletOptions(provider: WalletProvider.InAppWallet, chainId: this.ChainId, new InAppWalletOptions(authprovider: AuthProvider.Github));
             var wallet = await ThirdwebManager.Instance.ConnectWallet(walletOptions);
+            if (this.AlwaysUpgradeToSmartWallet)
+            {
+                wallet = await ThirdwebManager.Instance.UpgradeToSmartWallet(wallet, chainId: this.ChainId, smartWalletOptions: new SmartWalletOptions(sponsorGas: true));
+            }
             var address = await wallet.GetAddress();
             this.LogPlayground($"[Social] Connected to wallet:\n{address}");
         }
@@ -145,6 +150,10 @@ namespace Thirdweb.Unity.Examples
 
             var walletOptions = new WalletOptions(provider: WalletProvider.InAppWallet, chainId: this.ChainId, new InAppWalletOptions(email: this.Email));
             var wallet = await ThirdwebManager.Instance.ConnectWallet(walletOptions);
+            if (this.AlwaysUpgradeToSmartWallet)
+            {
+                wallet = await ThirdwebManager.Instance.UpgradeToSmartWallet(wallet, chainId: this.ChainId, smartWalletOptions: new SmartWalletOptions(sponsorGas: true));
+            }
             var address = await wallet.GetAddress();
             this.LogPlayground($"[Email] Connected to wallet:\n{address}");
         }
@@ -159,6 +168,10 @@ namespace Thirdweb.Unity.Examples
 
             var walletOptions = new WalletOptions(provider: WalletProvider.InAppWallet, chainId: this.ChainId, new InAppWalletOptions(phoneNumber: this.Phone));
             var wallet = await ThirdwebManager.Instance.ConnectWallet(walletOptions);
+            if (this.AlwaysUpgradeToSmartWallet)
+            {
+                wallet = await ThirdwebManager.Instance.UpgradeToSmartWallet(wallet, chainId: this.ChainId, smartWalletOptions: new SmartWalletOptions(sponsorGas: true));
+            }
             var address = await wallet.GetAddress();
             this.LogPlayground($"[Phone] Connected to wallet:\n{address}");
         }
@@ -171,6 +184,10 @@ namespace Thirdweb.Unity.Examples
                 reownOptions: new ReownOptions(projectId: null, name: null, description: null, url: null, iconUrl: null, includedWalletIds: null, excludedWalletIds: null)
             );
             var wallet = await ThirdwebManager.Instance.ConnectWallet(walletOptions);
+            if (this.AlwaysUpgradeToSmartWallet)
+            {
+                wallet = await ThirdwebManager.Instance.UpgradeToSmartWallet(wallet, chainId: this.ChainId, smartWalletOptions: new SmartWalletOptions(sponsorGas: true));
+            }
             var address = await wallet.GetAddress();
             this.LogPlayground($"[SIWE] Connected to wallet:\n{address}");
         }
