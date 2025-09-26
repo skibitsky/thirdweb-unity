@@ -855,7 +855,7 @@ PlayerSettings:
   webEnableSubmoduleStrippingCompatibility: 0
   scriptingDefineSymbols:
     Android: RH_SerializedDictionary
-    Standalone: RH_SerializedDictionary
+    Standalone: THIRDWEB_REOWN
     WebGL: THIRDWEB_REOWN
     iPhone: RH_SerializedDictionary
   additionalCompilerArguments: {}
