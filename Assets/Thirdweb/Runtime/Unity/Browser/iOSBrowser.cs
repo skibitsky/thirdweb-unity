@@ -226,7 +226,7 @@ namespace Thirdweb.Unity
         None = 0,
         CanceledLogin = 1,
         PresentationContextNotProvided = 2,
-        PresentationContextInvalid = 3
+        PresentationContextInvalid = 3,
     }
 }
 

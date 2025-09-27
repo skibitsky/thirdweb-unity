@@ -484,7 +484,7 @@ namespace Thirdweb.Unity
                     case AuthProvider.Steam:
                     default:
                         _ = await inAppWallet.LoginWithOauth(
-                            isMobile: IsMobileRuntime(),
+                            isMobile: this.IsMobileRuntime(),
                             browserOpenAction: (url) => Application.OpenURL(url),
                             mobileRedirectScheme: this.MobileRedirectScheme,
                             browser: new CrossPlatformUnityBrowser(this.RedirectPageHtmlOverride)
@@ -535,7 +535,7 @@ namespace Thirdweb.Unity
                     case AuthProvider.Steam:
                     default:
                         _ = await ecosystemWallet.LoginWithOauth(
-                            isMobile: IsMobileRuntime(),
+                            isMobile: this.IsMobileRuntime(),
                             browserOpenAction: (url) => Application.OpenURL(url),
                             mobileRedirectScheme: this.MobileRedirectScheme,
                             browser: new CrossPlatformUnityBrowser(this.RedirectPageHtmlOverride)
@@ -609,7 +609,7 @@ namespace Thirdweb.Unity
             return await mainWallet.LinkAccount(
                 walletToLink: walletToLink,
                 otp: otp,
-                isMobile: IsMobileRuntime(),
+                isMobile: this.IsMobileRuntime(),
                 browserOpenAction: (url) => Application.OpenURL(url),
                 mobileRedirectScheme: this.MobileRedirectScheme,
                 browser: new CrossPlatformUnityBrowser(this.RedirectPageHtmlOverride),
