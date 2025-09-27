@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://portal.thirdweb.com/unity/v5">
+  <a href="https://portal.thirdweb.com/unity">
     <img alt="Unity Documentation" src="https://img.shields.io/badge/Unity-Documentation-blue?logo=unity&style=for-the-badge" height="30">
   </a>
   <a href="https://portal.thirdweb.com/dotnet">
@@ -23,13 +23,13 @@ Experience our multichain game demo leveraging In-App Wallets and Account Abstra
 
 This SDK provides a Unity-first integration of all [thirdweb](https://thirdweb.com) functionality, including but not limited to:
 
-- Support for all target platforms, Unity 2022 & Unity 6.
-- First party support for [In-App Wallets](https://portal.thirdweb.com/connect/wallet/overview) (Guest, Email, Phone, Socials, Custom Auth+).
-- First party support for [Account Abstraction](https://portal.thirdweb.com/connect/account-abstraction/overview) (Both EIP-4337 & zkSync Native AA).
+- Support for all target platforms on Unity 2022+ & Unity 6+.
+- First party support for [In-App Wallets](https://portal.thirdweb.com/wallets) (Guest, Email, Phone, Socials, Custom Auth+).
+- First party support for [Account Abstraction](https://portal.thirdweb.com/wallets/sponsor-gas) (EIP-4337, zksync and EIP-7702).
 - Instant connection to any chain with RPC Edge integration.
 - Integrated IPFS upload/download.
-- Create blockchain-powered agents with Thirdweb [Nebula](https://thirdweb.com/nebula).
-- Easy to extend or wrap.
+- Full access to the [thirdweb API](https://portal.thirdweb.com/reference) via low-level ThirdwebClient.Api.
+- Easy to extend or wrap, everything is overrdeable.
 - High level contract extensions for interacting with common standards and thirdweb contract standards.
 - Automatic ABI resolution.
 - Build on top of thirdweb's [.NET SDK](https://portal.thirdweb.com/dotnet) - unity package updates are typically updates to a single DLL/a file or two.
@@ -39,14 +39,12 @@ This SDK provides a Unity-first integration of all [thirdweb](https://thirdweb.c
 
 **Build games for Web, Standalone, and Mobile using 2000+ supported chains, with various login options!**
 
-| Wallet Provider                                              | Web | Standalone | Mobile |
-| ------------------------------------------------------------ | :---: | :-----: | :----: |
-| **In-App Wallet** (Guest, Email, Phone, Socials, Backend, Custom)     |  ✔️   |   ✔️    |   ✔️   |
-| **Ecosystem Wallet** (IAW w/ partner permissions)            |  ✔️   |   ✔️    |   ✔️   |
-| **Private Key Wallet** (Ephemereal, good for testing)        |  ✔️   |   ✔️    |   ✔️   |
-| **Wallet Connect Wallet** (400+ Wallets)                     |  ✔️   |   ✔️    |   ✔️   |
-| **MetaMask Wallet** (Browser Extension)                      |  ✔️   |    —    |   —    |
-| **Smart Wallet** (Account Abstraction: 4337, ZkSync Native, 7702) |  ✔️   |   ✔️    |   ✔️   |
+| Wallet Provider                                                   | Web | Standalone | Mobile |
+| ----------------------------------------------------------------- | :-: | :--------: | :----: |
+| **In-App Wallet** (Guest, Email, Phone, Socials, Backend, Custom) | ✔️  |     ✔️     |   ✔️   |
+| **Ecosystem Wallet** (IAW w/ partner permissions)                 | ✔️  |     ✔️     |   ✔️   |
+| **Reown Wallet** (400+ Wallets)                                   | ✔️  |     ✔️     |   ✔️   |
+| **Smart Wallet** (Account Abstraction: 4337, ZkSync Native, 7702) | ✔️  |     ✔️     |   ✔️   |
 
 <sub>✔️ Supported</sub> &nbsp; <sub>❌ Not Supported</sub> &nbsp; <sub>— Not Applicable</sub>
 
@@ -62,11 +60,10 @@ This SDK provides a Unity-first integration of all [thirdweb](https://thirdweb.c
 - Newtonsoft.Json and EDM4U are included utilities; deselect when importing if already installed to avoid conflicts.
 - If using .NET Framework and encountering `HttpUtility` errors, create `csc.rsp` with `-r:System.Web.dll` under `Assets`.
 - Use version control and test removing duplicate DLLs if conflicts arise. Our SDK generally works with most versions of the few dependencies we do include.
-- To use your own WalletConnect Project ID, edit `Assets/Thirdweb/Plugins/WalletConnectUnity/Resources/WalletConnectProjectConfig.asset`.
 
 ## Additional Resources
 
-- [Documentation](https://portal.thirdweb.com/unity/v5)
+- [Documentation](https://portal.thirdweb.com/unity)
 - [Templates](https://thirdweb.com/templates)
 - [Website](https://thirdweb.com)
 
