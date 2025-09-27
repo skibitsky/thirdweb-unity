@@ -484,7 +484,7 @@ namespace Thirdweb.Unity
                     case AuthProvider.Steam:
                     default:
                         _ = await inAppWallet.LoginWithOauth(
-                            isMobile: Application.isMobilePlatform,
+                            isMobile: IsMobileRuntime(),
                             browserOpenAction: (url) => Application.OpenURL(url),
                             mobileRedirectScheme: this.MobileRedirectScheme,
                             browser: new CrossPlatformUnityBrowser(this.RedirectPageHtmlOverride)
@@ -535,7 +535,7 @@ namespace Thirdweb.Unity
                     case AuthProvider.Steam:
                     default:
                         _ = await ecosystemWallet.LoginWithOauth(
-                            isMobile: Application.isMobilePlatform,
+                            isMobile: IsMobileRuntime(),
                             browserOpenAction: (url) => Application.OpenURL(url),
                             mobileRedirectScheme: this.MobileRedirectScheme,
                             browser: new CrossPlatformUnityBrowser(this.RedirectPageHtmlOverride)
@@ -609,7 +609,7 @@ namespace Thirdweb.Unity
             return await mainWallet.LinkAccount(
                 walletToLink: walletToLink,
                 otp: otp,
-                isMobile: Application.isMobilePlatform,
+                isMobile: IsMobileRuntime(),
                 browserOpenAction: (url) => Application.OpenURL(url),
                 mobileRedirectScheme: this.MobileRedirectScheme,
                 browser: new CrossPlatformUnityBrowser(this.RedirectPageHtmlOverride),
@@ -617,6 +617,16 @@ namespace Thirdweb.Unity
                 jwt: jwtOrPayload,
                 payload: jwtOrPayload
             );
+        }
+
+        protected virtual bool IsMobileRuntime()
+        {
+            if (Application.platform == RuntimePlatform.OSXPlayer)
+            {
+                return true;
+            }
+
+            return Application.isMobilePlatform;
         }
 
         protected virtual bool GetAutoConnectOptions(out WalletOptions lastWalletOptions)
