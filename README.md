@@ -56,7 +56,8 @@ This SDK provides a Unity-first integration of all [thirdweb](https://thirdweb.c
 
 ## Miscellaneous
 
-- Recommended Unity Editor Version: 2022.3+ (LTS)
+- Minimum Unity Editor Version: Unity 2022.3+
+- Recommended Unity Editor Version: Unity 6+
 - Newtonsoft.Json and EDM4U are included utilities; deselect when importing if already installed to avoid conflicts.
 - If using .NET Framework and encountering `HttpUtility` errors, create `csc.rsp` with `-r:System.Web.dll` under `Assets`.
 - Use version control and test removing duplicate DLLs if conflicts arise. Our SDK generally works with most versions of the few dependencies we do include.
