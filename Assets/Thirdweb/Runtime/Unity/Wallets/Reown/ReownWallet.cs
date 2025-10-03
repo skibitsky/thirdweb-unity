@@ -38,7 +38,7 @@ namespace Thirdweb.Unity
 
             var wallet = new ReownWallet();
 
-            var wcChains = new List<Chain>(); // ChainConstants.Chains.All.ToList();
+            var wcChains = ChainConstants.Chains.All.ToList();
 
             if (wcChains.Any(c => c.ChainReference == activeChainId.ToString()))
             {
