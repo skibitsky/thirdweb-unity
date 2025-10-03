@@ -165,7 +165,7 @@ namespace Thirdweb.Editor
                 "Open Documentation",
                 () =>
                 {
-                    Application.OpenURL("http://portal.thirdweb.com/unity/v5");
+                    Application.OpenURL("http://portal.thirdweb.com/unity");
                 }
             );
         }
