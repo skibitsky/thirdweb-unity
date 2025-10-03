@@ -29,11 +29,11 @@ This SDK provides a Unity-first integration of all [thirdweb](https://thirdweb.c
 - Instant connection to any chain with RPC Edge integration.
 - Integrated IPFS upload/download.
 - Full access to the [thirdweb API](https://portal.thirdweb.com/reference) via low-level ThirdwebClient.Api.
-- Easy to extend or wrap, everything is overrdeable.
+- Easy to extend or wrap, everything is overrideable.
 - High level contract extensions for interacting with common standards and thirdweb contract standards.
 - Automatic ABI resolution.
 - Build on top of thirdweb's [.NET SDK](https://portal.thirdweb.com/dotnet) - unity package updates are typically updates to a single DLL/a file or two.
-- Get started in 5 minutes with a simple [ThirdwebManager](https://portal.thirdweb.com/unity/v5/thirdwebmanager) prefab.
+- Get started in 5 minutes with a simple [ThirdwebManager](https://portal.thirdweb.com/unity/v6/thirdwebmanager) prefab.
 
 # Supported Platforms & Wallets
 
@@ -52,7 +52,7 @@ This SDK provides a Unity-first integration of all [thirdweb](https://thirdweb.c
 
 1. **Download:** Head over to the [releases](https://github.com/thirdweb-dev/unity-sdk/releases) page and download the latest `.unitypackage` file.
 2. **Explore:** Try out `Scene_Playground` to explore functionality and get onboarded.
-3. **Learn:** Explore the [Unity v5 SDK Docs](https://portal.thirdweb.com/unity/v5) and the [.NET SDK Docs](https://portal.thirdweb.com/dotnet) to find a full API reference.
+3. **Learn:** Explore the [Unity v6 SDK Docs](https://portal.thirdweb.com/unity) and the [.NET SDK Docs](https://portal.thirdweb.com/dotnet) to find a full API reference.
 
 ## Miscellaneous
 
