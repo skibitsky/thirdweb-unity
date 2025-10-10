@@ -133,27 +133,11 @@ namespace Thirdweb.Editor
 
                     if (this.target is ThirdwebManagerBase manager)
                     {
-                        var wallet = manager.ActiveWallet;
-                        if (wallet != null)
+                        EditorApplication.delayCall += async () =>
                         {
-                            EditorApplication.delayCall += async () =>
-                            {
-                                try
-                                {
-                                    await wallet.Disconnect();
-                                    manager.ActiveWallet = null;
-                                    Debug.Log("Active wallet disconnected.");
-                                }
-                                catch (Exception ex)
-                                {
-                                    Debug.LogError($"Failed to disconnect active wallet: {ex.Message}");
-                                }
-                            };
-                        }
-                        else
-                        {
-                            Debug.LogWarning("No active wallet to disconnect.");
-                        }
+                            await manager.DisconnectWallet();
+                            Debug.Log("Active wallet disconnected.");
+                        };
                     }
                     else
                     {

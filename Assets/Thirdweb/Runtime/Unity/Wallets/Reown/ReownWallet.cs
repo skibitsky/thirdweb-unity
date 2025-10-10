@@ -7,6 +7,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Nethereum.ABI.EIP712;
 using Reown.AppKit.Unity;
+using AccountConnectedEventArgs = Reown.AppKit.Unity.Connector.AccountConnectedEventArgs;
 
 namespace Thirdweb.Unity
 {
@@ -70,17 +71,8 @@ namespace Thirdweb.Unity
 
             ThirdwebDebug.Log("Reown AppKit initialized.");
 
-            var connected = false;
-
-            try
-            {
-                connected = await AppKit.ConnectorController.TryResumeSessionAsync();
-            }
-            catch (Exception e)
-            {
-                ThirdwebDebug.LogWarning($"Failed to resume Reown session: {e.Message}");
-                connected = false;
-            }
+            var connectionTimeout = TimeSpan.FromSeconds(120);
+            var connected = await TryResumeExistingSessionAsync();
 
             if (connected)
             {
@@ -88,22 +80,13 @@ namespace Thirdweb.Unity
             }
             else
             {
-                ThirdwebDebug.Log("Opening Reown modal... Timeout in 120 seconds.");
-                AppKit.AccountConnected += (_, e) => connected = true;
-                AppKit.OpenModal();
-
-                var timeoutMs = 120000; // 120 seconds
-                var intervalMs = 250; // 0.25 second
-                while (!connected && timeoutMs > 0)
-                {
-                    await ThirdwebTask.Delay(intervalMs);
-                    timeoutMs -= intervalMs;
-                }
+                ThirdwebDebug.Log($"Awaiting Reown connection (timeout {connectionTimeout.TotalSeconds} seconds)...");
+                connected = await WaitForInteractiveConnectionAsync(connectionTimeout);
             }
 
             if (!connected)
             {
-                throw new Exception("Reown connection timed out.");
+                throw new TimeoutException($"Reown connection timed out after {connectionTimeout.TotalSeconds} seconds.");
             }
 
             ThirdwebDebug.Log("Reown wallet connected.");
@@ -262,7 +245,83 @@ namespace Thirdweb.Unity
             ThirdwebDebug.Log($"Switched Reown to chain ID {chainId}.");
         }
 
-        internal static Chain ToWcChain(ThirdwebClient client, BigInteger chainId)
+        private static async Task<bool> TryResumeExistingSessionAsync()
+        {
+            try
+            {
+                return await AppKit.ConnectorController.TryResumeSessionAsync();
+            }
+            catch (Exception e)
+            {
+                ThirdwebDebug.LogWarning($"Failed to resume Reown session: {e.Message}");
+                try
+                {
+                    await AppKit.ConnectorController.DisconnectAsync();
+                }
+                catch (Exception disconnectException)
+                {
+                    ThirdwebDebug.LogWarning($"Failed to clean up Reown session after resume error: {disconnectException.Message}");
+                }
+
+                await ThirdwebTask.Delay(1000);
+                return false;
+            }
+        }
+
+        private static async Task<bool> WaitForInteractiveConnectionAsync(TimeSpan timeout)
+        {
+            if (AppKit.ConnectorController.IsAccountConnected)
+            {
+                return true;
+            }
+
+            var connectionEstablished = false;
+            var connectedTcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+
+            void OnAccountConnected(object sender, AccountConnectedEventArgs args)
+            {
+                connectionEstablished = true;
+                if (!connectedTcs.Task.IsCompleted)
+                {
+                    connectedTcs.SetResult(true);
+                }
+            }
+
+            AppKit.AccountConnected += OnAccountConnected;
+
+            try
+            {
+                await ThirdwebTask.Delay(250);
+
+                if (!AppKit.ConnectorController.IsAccountConnected)
+                {
+                    AppKit.OpenModal();
+                }
+
+                var timeoutMilliseconds = (int)Math.Max(0, timeout.TotalMilliseconds);
+                var timeoutTask = ThirdwebTask.Delay(timeoutMilliseconds);
+                var completedTask = await Task.WhenAny(connectedTcs.Task, timeoutTask);
+
+                if (completedTask == connectedTcs.Task)
+                {
+                    return await connectedTcs.Task;
+                }
+
+                ThirdwebDebug.LogWarning($"Reown connection timed out after {timeout.TotalSeconds} seconds.");
+                await AppKit.ConnectorController.DisconnectAsync();
+                return false;
+            }
+            finally
+            {
+                AppKit.AccountConnected -= OnAccountConnected;
+                if (!connectionEstablished)
+                {
+                    AppKit.CloseModal();
+                }
+            }
+        }
+
+        private static Chain ToWcChain(ThirdwebClient client, BigInteger chainId)
         {
             var wcChain = ChainConstants.Chains.All.FirstOrDefault(c => c.ChainReference == chainId.ToString());
 

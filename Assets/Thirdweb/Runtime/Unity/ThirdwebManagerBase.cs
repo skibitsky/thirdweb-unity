@@ -562,6 +562,22 @@ namespace Thirdweb.Unity
             }
         }
 
+        public virtual async Task DisconnectWallet()
+        {
+            if (this.ActiveWallet != null)
+            {
+                try
+                {
+                    await this.ActiveWallet.Disconnect();
+                }
+                finally
+                {
+                    this.ActiveWallet = null;
+                }
+            }
+            PlayerPrefs.DeleteKey(THIRDWEB_AUTO_CONNECT_OPTIONS_KEY);
+        }
+
         public virtual async Task<SmartWallet> UpgradeToSmartWallet(IThirdwebWallet personalWallet, BigInteger chainId, SmartWalletOptions smartWalletOptions)
         {
             if (personalWallet.AccountType == ThirdwebAccountType.SmartAccount)
