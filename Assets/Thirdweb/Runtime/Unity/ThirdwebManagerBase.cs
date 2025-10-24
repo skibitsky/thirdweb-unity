@@ -175,6 +175,15 @@ namespace Thirdweb.Unity
         [JsonProperty("excludedWalletIds")]
         public string[] ExcludedWalletIds;
 
+        [JsonProperty("featuredWalletIds")]
+        public string[] FeaturedWalletIds;
+
+        [JsonProperty("singleWalletId")]
+        public string SingleWalletId;
+
+        [JsonProperty("tryResumeSession")]
+        public bool TryResumeSession;
+
         public ReownOptions(
             string projectId = null,
             string name = null,
@@ -182,9 +191,16 @@ namespace Thirdweb.Unity
             string url = null,
             string iconUrl = null,
             string[] includedWalletIds = null,
-            string[] excludedWalletIds = null
+            string[] excludedWalletIds = null,
+            string[] featuredWalletIds = null,
+            string singleWalletId = null,
+            bool tryResumeSession = true
         )
         {
+            if (singleWalletId != null && (includedWalletIds != null || excludedWalletIds != null || featuredWalletIds != null))
+            {
+                throw new ArgumentException("singleWalletId cannot be used with includedWalletIds, excludedWalletIds, or featuredWalletIds.");
+            }
             this.ProjectId = projectId ?? "35603765088f9ed24db818100fdbb6f9";
             this.Name = name ?? "thirdweb";
             this.Description = description ?? "thirdweb powered game";
@@ -192,6 +208,9 @@ namespace Thirdweb.Unity
             this.IconUrl = iconUrl ?? "https://thirdweb.com/favicon.ico";
             this.IncludedWalletIds = includedWalletIds;
             this.ExcludedWalletIds = excludedWalletIds;
+            this.FeaturedWalletIds = featuredWalletIds;
+            this.SingleWalletId = singleWalletId;
+            this.TryResumeSession = tryResumeSession;
         }
     }
 
@@ -429,7 +448,10 @@ namespace Thirdweb.Unity
                         url: walletOptions.ReownOptions.Url,
                         iconUrl: walletOptions.ReownOptions.IconUrl,
                         includedWalletIds: walletOptions.ReownOptions.IncludedWalletIds,
-                        excludedWalletIds: walletOptions.ReownOptions.ExcludedWalletIds
+                        excludedWalletIds: walletOptions.ReownOptions.ExcludedWalletIds,
+                        featuredWalletIds: walletOptions.ReownOptions.FeaturedWalletIds,
+                        singleWalletId: walletOptions.ReownOptions.SingleWalletId,
+                        tryResumeSession: walletOptions.ReownOptions.TryResumeSession
                     );
                     break;
 #else
