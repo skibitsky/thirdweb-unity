@@ -90,7 +90,7 @@ namespace Thirdweb.Unity
 
             if (!connected)
             {
-                throw new TimeoutException($"Reown connection timed out after {connectionTimeout.TotalSeconds} seconds.");
+                throw new Exception("Reown wallet connection either timed out or was cancelled by the user.");
             }
 
             ThirdwebDebug.Log("Reown wallet connected.");
@@ -291,7 +291,38 @@ namespace Thirdweb.Unity
                 }
             }
 
+            async void OnModalOpenStateChanged(object sender, ModalOpenStateChangedEventArgs args)
+            {
+                if (!args.IsOpen && !connectionEstablished && !connectedTcs.Task.IsCompleted)
+                {
+                    // Modal closes after successful connection, doing this to avoid race condition
+                    const int maxWaitMs = 2000;
+                    const int pollIntervalMs = 100;
+                    var elapsed = 0;
+
+                    while (elapsed < maxWaitMs && !connectionEstablished && !connectedTcs.Task.IsCompleted)
+                    {
+                        await ThirdwebTask.Delay(pollIntervalMs);
+                        elapsed += pollIntervalMs;
+
+                        if (AppKit.ConnectorController.IsAccountConnected)
+                        {
+                            // Connection established, AccountConnected event will handle it
+                            return;
+                        }
+                    }
+
+                    // At this point user likely cancelled
+                    if (!connectionEstablished && !connectedTcs.Task.IsCompleted)
+                    {
+                        ThirdwebDebug.LogWarning("Reown modal closed before connection was established.");
+                        connectedTcs.SetResult(false);
+                    }
+                }
+            }
+
             AppKit.AccountConnected += OnAccountConnected;
+            AppKit.ModalController.OpenStateChanged += OnModalOpenStateChanged;
 
             try
             {
@@ -325,6 +356,7 @@ namespace Thirdweb.Unity
             finally
             {
                 AppKit.AccountConnected -= OnAccountConnected;
+                AppKit.ModalController.OpenStateChanged -= OnModalOpenStateChanged;
                 if (!connectionEstablished)
                 {
                     AppKit.CloseModal();
