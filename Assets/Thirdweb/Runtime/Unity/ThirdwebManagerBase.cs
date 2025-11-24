@@ -504,6 +504,7 @@ namespace Thirdweb.Unity
                     case AuthProvider.Github:
                     case AuthProvider.Twitch:
                     case AuthProvider.Steam:
+                    case AuthProvider.Epic:
                     default:
                         _ = await inAppWallet.LoginWithOauth(
                             isMobile: this.IsMobileRuntime(),
@@ -555,6 +556,7 @@ namespace Thirdweb.Unity
                     case AuthProvider.Github:
                     case AuthProvider.Twitch:
                     case AuthProvider.Steam:
+                    case AuthProvider.Epic:
                     default:
                         _ = await ecosystemWallet.LoginWithOauth(
                             isMobile: this.IsMobileRuntime(),
