@@ -12,40 +12,37 @@ namespace Thirdweb.Unity
         [field: SerializeField]
         private string BundleId { get; set; }
 
-        public static new ThirdwebManager Instance
-        {
-            get => ThirdwebManagerBase.Instance as ThirdwebManager;
-        }
+        public static new ThirdwebManager Instance => ThirdwebManagerBase.Instance as ThirdwebManager;
 
         protected override ThirdwebClient CreateClient()
         {
-            if (string.IsNullOrWhiteSpace(ClientId))
+            if (string.IsNullOrWhiteSpace(this.ClientId))
             {
                 ThirdwebDebug.LogError("ClientId must be set in order to initialize ThirdwebManager. " + "Get your API key from https://thirdweb.com/create-api-key");
                 return null;
             }
 
-            if (string.IsNullOrWhiteSpace(BundleId))
+            if (string.IsNullOrWhiteSpace(this.BundleId))
             {
-                BundleId = null;
+                this.BundleId = null;
             }
 
-            BundleId ??= string.IsNullOrWhiteSpace(Application.identifier) ? $"com.{Application.companyName}.{Application.productName}" : Application.identifier;
+            this.BundleId ??= string.IsNullOrWhiteSpace(Application.identifier) ? $"com.{Application.companyName}.{Application.productName}" : Application.identifier;
 
             return ThirdwebClient.Create(
-                clientId: ClientId,
-                bundleId: BundleId,
+                clientId: this.ClientId,
+                bundleId: this.BundleId,
                 httpClient: new CrossPlatformUnityHttpClient(),
                 sdkName: Application.platform == RuntimePlatform.WebGLPlayer ? "UnitySDK_WebGL" : "UnitySDK",
                 sdkOs: Application.platform.ToString(),
                 sdkPlatform: "unity",
                 sdkVersion: THIRDWEB_UNITY_SDK_VERSION,
-                rpcOverrides: (RpcOverrides == null || RpcOverrides.Count == 0)
+                rpcOverrides: (this.RpcOverrides == null || this.RpcOverrides.Count == 0)
                     ? null
-                    : RpcOverrides.ToDictionary(rpcOverride => new BigInteger(rpcOverride.ChainId), rpcOverride => rpcOverride.RpcUrl)
+                    : this.RpcOverrides.ToDictionary(rpcOverride => new BigInteger(rpcOverride.ChainId), rpcOverride => rpcOverride.RpcUrl)
             );
         }
 
-        public override string MobileRedirectScheme => BundleId + "://";
+        public override string MobileRedirectScheme => this.BundleId + "://";
     }
 }

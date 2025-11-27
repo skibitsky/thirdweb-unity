@@ -267,6 +267,9 @@ namespace Thirdweb.Unity
         protected bool InitializeOnAwake { get; set; } = true;
 
         [field: SerializeField]
+        protected bool InitializeOnStart { get; set; } = false;
+
+        [field: SerializeField]
         protected bool ShowDebugLogs { get; set; } = true;
 
         [field: SerializeField]
@@ -339,8 +342,22 @@ namespace Thirdweb.Unity
             }
         }
 
+        protected virtual void Start()
+        {
+            if (this.InitializeOnStart)
+            {
+                this.Initialize();
+            }
+        }
+
         public virtual async void Initialize()
         {
+            if (this.Initialized || this.Client != null)
+            {
+                ThirdwebDebug.LogWarning("ThirdwebManager is already initialized.");
+                return;
+            }
+
             this.Client = this.CreateClient();
             if (this.Client == null)
             {

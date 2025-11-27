@@ -10,6 +10,7 @@ namespace Thirdweb.Editor
         where T : MonoBehaviour
     {
         protected SerializedProperty InitializeOnAwakeProp;
+        protected SerializedProperty InitializeOnStartProp;
         protected SerializedProperty ShowDebugLogsProp;
         protected SerializedProperty AutoConnectLastWalletProp;
         protected SerializedProperty RedirectPageHtmlOverrideProp;
@@ -24,6 +25,7 @@ namespace Thirdweb.Editor
         protected virtual void OnEnable()
         {
             this.InitializeOnAwakeProp = this.FindProp("InitializeOnAwake");
+            this.InitializeOnStartProp = this.FindProp("InitializeOnStart");
             this.ShowDebugLogsProp = this.FindProp("ShowDebugLogs");
             this.AutoConnectLastWalletProp = this.FindProp("AutoConnectLastWallet");
             this.RedirectPageHtmlOverrideProp = this.FindProp("RedirectPageHtmlOverride");
@@ -77,6 +79,7 @@ namespace Thirdweb.Editor
         {
             EditorGUILayout.HelpBox("Set your preferences and initialization options here.", MessageType.Info);
             this.DrawProperty(this.InitializeOnAwakeProp, "Initialize On Awake");
+            this.DrawProperty(this.InitializeOnStartProp, "Initialize On Start");
             this.DrawProperty(this.ShowDebugLogsProp, "Show Debug Logs");
             this.DrawProperty(this.AutoConnectLastWalletProp, "Auto-Connect Last Wallet");
         }
