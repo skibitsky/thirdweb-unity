@@ -13,12 +13,6 @@
   </a>
 </p>
 
-# Technical Demo
-
-Experience our multichain game demo leveraging In-App Wallets and Account Abstraction built in three weeks - [Web3 Warriors](https://web3warriors.thirdweb.com/).
-
-![image](https://github.com/thirdweb-dev/unity-sdk/assets/43042585/171198b2-83e7-4c8a-951b-79126dd47abb)
-
 # Features
 
 This SDK provides a Unity-first integration of all [thirdweb](https://thirdweb.com) functionality, including but not limited to:
@@ -44,7 +38,7 @@ This SDK provides a Unity-first integration of all [thirdweb](https://thirdweb.c
 | **In-App Wallet** (Guest, Email, Phone, Socials, Backend, Custom) | ✔️  |     ✔️     |   ✔️   |
 | **Ecosystem Wallet** (IAW w/ partner permissions)                 | ✔️  |     ✔️     |   ✔️   |
 | **Reown Wallet** (400+ Wallets)                                   | ✔️  |     ✔️     |   ✔️   |
-| **Smart Wallet** (Account Abstraction: 4337, ZkSync Native, 7702) | ✔️  |     ✔️     |   ✔️   |
+| **Smart Wallet** (Account Abstraction: ERC4337, EIP7702) | ✔️  |     ✔️     |   ✔️   |
 
 <sub>✔️ Supported</sub> &nbsp; <sub>❌ Not Supported</sub> &nbsp; <sub>— Not Applicable</sub>
 
